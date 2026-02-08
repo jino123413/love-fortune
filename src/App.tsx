@@ -1,68 +1,90 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { generateHapticFeedback } from '@apps-in-toss/web-framework';
 import { FortuneResult, StreakData } from './types';
 import { getLoveFortune } from './utils/fortune-engine';
-import { getStreakData, updateStreak, hasViewedToday, markViewedToday } from './utils/storage';
+import { getStreakData, updateStreak, markViewedToday } from './utils/storage';
 import { useInterstitialAd } from './hooks/useInterstitialAd';
 import { DeviceViewport } from './components/DeviceViewport';
 import ResultScreen from './components/ResultScreen';
-import { StreakFireIcon, HeartPulseIcon, FallingHearts } from './components/BrandIcons';
+import { LoveHeartIcon, FallingHearts } from './components/BrandIcons';
 
-type Screen = 'loading' | 'result';
+type Screen = 'loading' | 'revealing' | 'result';
 
-const LOADING_MESSAGES = [
-  '오늘의 연애 에너지를 읽고 있어요...',
-  '별들이 당신의 사랑을 점치고 있어요...',
-  '하트가 당신에게 메시지를 보내고 있어요...',
-  '운명의 실타래를 풀고 있어요...',
+const REVEAL_MESSAGES = [
+  '두근두근...',
+  '오늘의 연애운은...',
+  '피기가 읽어보고 있어용...',
 ];
 
 const App: React.FC = () => {
   const [screen, setScreen] = useState<Screen>('loading');
   const [fortuneResult, setFortuneResult] = useState<FortuneResult | null>(null);
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
+  const [weeklyUnlocked, setWeeklyUnlocked] = useState(false);
   const [streak, setStreak] = useState<StreakData>({
     currentStreak: 0,
     lastVisitDate: '',
     totalVisits: 0,
   });
-  const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0]);
+  const [fortuneReady, setFortuneReady] = useState(false);
+  const [revealMsg, setRevealMsg] = useState('');
   const { loading: adLoading, showInterstitialAd } = useInterstitialAd();
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Generate fortune on mount
+  // Prepare fortune data on mount
   useEffect(() => {
-    const loadFortune = async () => {
+    const prepare = async () => {
       const streakData = await getStreakData();
       setStreak(streakData);
 
-      // Cycle loading messages
-      let msgIndex = 0;
-      const msgInterval = setInterval(() => {
-        msgIndex = (msgIndex + 1) % LOADING_MESSAGES.length;
-        setLoadingMessage(LOADING_MESSAGES[msgIndex]);
-      }, 1200);
+      const result = getLoveFortune();
+      setFortuneResult(result);
 
-      // Simulate reading time
-      setTimeout(async () => {
-        clearInterval(msgInterval);
+      const updatedStreak = await updateStreak();
+      setStreak(updatedStreak);
+      await markViewedToday();
 
-        const result = getLoveFortune();
-        setFortuneResult(result);
-
-        const updatedStreak = await updateStreak();
-        setStreak(updatedStreak);
-        await markViewedToday();
-
-        try {
-          generateHapticFeedback({ type: 'softMedium' });
-        } catch {}
-
-        setScreen('result');
-      }, 2500);
+      setFortuneReady(true);
     };
-
-    loadFortune();
+    prepare();
   }, []);
+
+  const handleReveal = useCallback(() => {
+    if (!fortuneReady || !fortuneResult) return;
+
+    try {
+      generateHapticFeedback({ type: 'softMedium' });
+    } catch {}
+
+    setScreen('revealing');
+    setRevealMsg(REVEAL_MESSAGES[0]);
+
+    // Cycle through reveal messages with increasing intensity
+    let msgIdx = 0;
+    const msgTimer = setInterval(() => {
+      msgIdx++;
+      if (msgIdx < REVEAL_MESSAGES.length) {
+        setRevealMsg(REVEAL_MESSAGES[msgIdx]);
+        try {
+          generateHapticFeedback({ type: 'softHeavy' });
+        } catch {}
+      }
+    }, 700);
+
+    // Transition to result after animation
+    revealTimerRef.current = setTimeout(() => {
+      clearInterval(msgTimer);
+      try {
+        generateHapticFeedback({ type: 'rigid' });
+      } catch {}
+      setScreen('result');
+    }, 2200);
+
+    return () => {
+      clearInterval(msgTimer);
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    };
+  }, [fortuneReady, fortuneResult]);
 
   const handleUnlockPremium = useCallback(() => {
     showInterstitialAd({
@@ -75,8 +97,18 @@ const App: React.FC = () => {
     });
   }, [showInterstitialAd]);
 
+  const handleUnlockWeekly = useCallback(() => {
+    showInterstitialAd({
+      onDismiss: () => {
+        setWeeklyUnlocked(true);
+        try {
+          generateHapticFeedback({ type: 'softMedium' });
+        } catch {}
+      },
+    });
+  }, [showInterstitialAd]);
+
   const handleRetry = useCallback(() => {
-    // Just scroll to top as fortune changes daily
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -112,25 +144,59 @@ const App: React.FC = () => {
         {/* Header */}
         <header className="app-header">
           <div className="header-content">
-            <h1 className="header-title">연애 뭐래</h1>
+            <h1 className="header-title">연애 몇 점</h1>
             {streak.currentStreak > 0 && (
               <div className="streak-badge">
-                <StreakFireIcon size={16} />
+                <img src="/mascot/streak-fire-xs.png" alt="" className="streak-badge-icon" />
                 <span>{streak.currentStreak}일 연속</span>
               </div>
             )}
           </div>
         </header>
 
-        {/* Loading Screen */}
-        {screen === 'loading' && (
-          <div className="loading-screen">
-            <div className="loading-heart-container">
-              <div className="loading-heart">
-                <HeartPulseIcon size={48} />
-              </div>
+        {/* Loading / Reveal Screen */}
+        {(screen === 'loading' || screen === 'revealing') && (
+          <div className={`loading-screen ${screen === 'revealing' ? 'revealing' : ''}`}>
+            <div className={`loading-mascot-wrap ${screen === 'revealing' ? 'revealing' : ''}`}>
+              <img src="/mascot/mascot-main.png" alt="연애 몇 점" className="loading-mascot" />
             </div>
-            <p className="loading-text">{loadingMessage}</p>
+
+            {screen === 'loading' && (
+              <>
+                <p className="loading-greeting">오늘의 연애운을 확인해볼까용?</p>
+                <button
+                  className={`btn-reveal ${fortuneReady ? 'ready' : ''}`}
+                  onClick={handleReveal}
+                  disabled={!fortuneReady}
+                >
+                  <LoveHeartIcon size={20} />
+                  <span>{fortuneReady ? '오늘의 연애운 확인하기' : '준비 중...'}</span>
+                </button>
+                <p className="loading-hint">피기가 오늘의 운세를 준비했어용 꿀꿀~</p>
+              </>
+            )}
+
+            {screen === 'revealing' && (
+              <>
+                {/* Burst hearts */}
+                <div className="heart-burst" aria-hidden="true">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className="burst-heart"
+                      style={{
+                        '--burst-angle': `${i * 45}deg`,
+                        '--burst-delay': `${i * 0.05}s`,
+                        '--burst-distance': `${60 + (i % 3) * 20}px`,
+                      } as React.CSSProperties}
+                    >
+                      <LoveHeartIcon size={12 + (i % 3) * 4} />
+                    </span>
+                  ))}
+                </div>
+                <p className="reveal-message">{revealMsg}</p>
+              </>
+            )}
           </div>
         )}
 
@@ -140,6 +206,8 @@ const App: React.FC = () => {
             result={fortuneResult}
             premiumUnlocked={premiumUnlocked}
             onUnlockPremium={handleUnlockPremium}
+            weeklyUnlocked={weeklyUnlocked}
+            onUnlockWeekly={handleUnlockWeekly}
             onRetry={handleRetry}
             adLoading={adLoading}
           />

@@ -2,7 +2,10 @@ import { useEffect } from 'react';
 import { getPlatformOS } from '@apps-in-toss/web-framework';
 
 export function DeviceViewport() {
-  const isIOS = getPlatformOS() === 'ios';
+  let isIOS = false;
+  try {
+    isIOS = getPlatformOS() === 'ios';
+  } catch {}
 
   useEffect(() => {
     const styles: Record<string, string> = {

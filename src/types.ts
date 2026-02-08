@@ -1,37 +1,51 @@
+export interface DateScenario {
+  spot: string;
+  style: string;
+  food: string;
+  song: string;
+  sentence: string;
+}
+
+export interface LoveType {
+  name: string;
+  emoji: string;
+  description: string;
+  action: string;
+}
+
+export type LovePhase = 'plasma' | 'gas' | 'liquid' | 'solid';
+
 export interface LoveFortune {
   id: number;
-  grade: 'S' | 'A' | 'B' | 'C' | 'D';
+  phase: LovePhase;
   title: string;
   description: string;
-  charm: number;
-  encounter: number;
-  chemistry: number;
-  luckyColor: string;
-  luckyNumber: number;
-  luckyDirection: string;
-  luckyTime: string;
+  charmIntensity: number;
+  encounterIntensity: number;
+  chemistryIntensity: number;
+  dateScenario: DateScenario;
   advice: string;
-  compatibilitySign: string;
+  loveType: LoveType;
 }
 
 export interface FortuneResult {
-  grade: 'S' | 'A' | 'B' | 'C' | 'D';
+  phase: LovePhase;
   title: string;
   description: string;
-  scores: {
+  intensities: {
     label: string;
-    value: number;
+    level: number;
   }[];
-  luckyItems: {
-    color: string;
-    number: number;
-    direction: string;
-    time: string;
-  };
+  dateScenario: DateScenario;
   advice: string;
   premiumContent?: {
-    compatibility?: string;
+    loveType?: LoveType;
   };
+}
+
+export interface WeeklyForecast {
+  days: { day: string; phase: LovePhase }[];
+  summary: string;
 }
 
 export interface StreakData {

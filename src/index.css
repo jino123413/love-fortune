@@ -2,29 +2,29 @@
   --primary: #E91E63;
   --primary-light: #F06292;
   --primary-dark: #C2185B;
-  --bg: #1A0A14;
-  --bg-light: #2D0A1A;
-  --bg-card: #2A1020;
-  --bg-card-hover: #351428;
-  --surface: #321428;
-  --surface-light: #3D1A32;
-  --text-primary: #F5E6ED;
-  --text-secondary: #C4A0B2;
-  --text-tertiary: #8B6578;
-  --border: #3D1A32;
-  --border-light: #4E2240;
+  --bg: #FFF5F8;
+  --bg-light: #FFF0F5;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FFF0F5;
+  --surface: #FEF0F5;
+  --surface-light: #FFE4EE;
+  --text-primary: #2D1320;
+  --text-secondary: #6B4558;
+  --text-tertiary: #A68898;
+  --border: #F5D5E0;
+  --border-light: #F0C0D5;
   --pink: #E91E63;
   --pink-light: #F06292;
   --rose: #FF4081;
   --rose-light: #FF80AB;
-  --gold: #F59E0B;
-  --gold-light: #FCD34D;
+  --gold: #E8930A;
+  --gold-light: #D4890A;
   --radius: 16px;
   --radius-sm: 12px;
   --radius-xs: 8px;
-  --shadow: 0 2px 12px rgba(233, 30, 99, 0.08);
-  --shadow-lg: 0 4px 24px rgba(233, 30, 99, 0.15);
-  --shadow-glow: 0 0 20px rgba(233, 30, 99, 0.25);
+  --shadow: 0 2px 12px rgba(233, 30, 99, 0.06);
+  --shadow-lg: 0 4px 20px rgba(233, 30, 99, 0.08);
+  --shadow-glow: 0 0 20px rgba(233, 30, 99, 0.1);
   --font: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
@@ -129,12 +129,12 @@ body {
   align-items: center;
   gap: 4px;
   padding: 4px 12px;
-  background: rgba(233, 30, 99, 0.15);
-  border: 1px solid rgba(233, 30, 99, 0.3);
+  background: rgba(233, 30, 99, 0.08);
+  border: 1px solid rgba(233, 30, 99, 0.2);
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--pink-light);
+  color: var(--primary);
 }
 
 .streak-badge i {
@@ -156,27 +156,159 @@ body {
   z-index: 1;
 }
 
-.loading-heart-container {
-  margin-bottom: 32px;
+.loading-mascot-wrap {
+  margin-bottom: 24px;
+  position: relative;
+  transition: transform 0.5s ease;
 }
 
-.loading-heart {
-  width: 80px;
-  height: 80px;
+.loading-mascot-wrap.revealing {
+  animation: mascotExcited 0.4s ease infinite;
+}
+
+@keyframes mascotExcited {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+}
+
+.loading-greeting {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: -0.3px;
+  animation: fadeIn 0.6s ease;
+}
+
+.btn-reveal {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
-  color: var(--primary);
-  animation: heartbeat 1.2s ease-in-out infinite;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  opacity: 0.5;
+  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.3);
+  animation: fadeIn 0.6s ease 0.2s both;
 }
 
-.loading-text {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  animation: shimmerText 2s ease-in-out infinite;
+.btn-reveal.ready {
+  opacity: 1;
+  animation: fadeIn 0.6s ease 0.2s both, btnPulseGlow 2s ease-in-out infinite;
+}
+
+.btn-reveal:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-reveal:disabled {
+  cursor: not-allowed;
+}
+
+/* Shimmer sweep over button */
+.btn-reveal.ready::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  animation: btnSweep 2.5s ease-in-out infinite;
+}
+
+@keyframes btnSweep {
+  0% { left: -100%; }
+  50% { left: 150%; }
+  100% { left: 150%; }
+}
+
+@keyframes btnPulseGlow {
+  0%, 100% { box-shadow: 0 4px 16px rgba(233, 30, 99, 0.3); }
+  50% { box-shadow: 0 4px 28px rgba(233, 30, 99, 0.5), 0 0 40px rgba(233, 30, 99, 0.15); }
+}
+
+.loading-hint {
+  font-size: 13px;
+  color: var(--text-tertiary);
   text-align: center;
+  margin-top: 16px;
+  animation: fadeIn 0.6s ease 0.4s both;
+}
+
+/* ==================== Reveal Animation ==================== */
+
+.loading-screen.revealing {
+  animation: revealBgPulse 0.6s ease infinite;
+}
+
+@keyframes revealBgPulse {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(233, 30, 99, 0.03); }
+}
+
+.reveal-message {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  text-align: center;
+  letter-spacing: -0.3px;
+  animation: revealTextPop 0.5s ease;
+}
+
+@keyframes revealTextPop {
+  0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+  60% { transform: scale(1.05) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Heart burst from center */
+.heart-burst {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.burst-heart {
+  position: absolute;
+  color: var(--primary);
+  animation: burstOut 0.8s ease-out var(--burst-delay, 0s) forwards;
+  opacity: 0;
+}
+
+@keyframes burstOut {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--burst-angle, 0deg))
+      translateY(calc(-1 * var(--burst-distance, 60px)))
+      scale(1);
+    opacity: 0;
+  }
 }
 
 /* ==================== Result Screen ==================== */
@@ -213,62 +345,90 @@ body {
   background: var(--primary);
 }
 
-/* Grade Badge */
-.grade-badge {
-  display: inline-flex;
+/* ==================== Heart Gauge — density & saturation ==================== */
+
+.heart-gauge {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
-  border-radius: 24px;
   margin-bottom: 20px;
   animation: popIn 0.6s ease;
 }
 
-.grade-letter {
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1;
+.heart-gauge-fill {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  animation: heartPulse var(--pulse-speed, 1.2s) ease-in-out infinite;
 }
 
-.grade-label {
-  font-size: 13px;
+.heart-gauge-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Fill animation: rect slides up from bottom */
+.heart-fill-rect {
+  transform: translateY(calc(100% - var(--fill-pct, 50%)));
+  transition: transform 1.5s ease-out;
+  animation: heartFillUp 1.5s ease-out forwards;
+}
+
+@keyframes heartFillUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(calc(100% - var(--fill-pct, 50%)));
+  }
+}
+
+/* Phase-based heart colors — all pink family, saturation decreases */
+.phase-heart-plasma {
+  color: var(--primary);
+  filter: drop-shadow(0 0 16px rgba(233, 30, 99, 0.5));
+}
+.phase-heart-gas {
+  color: var(--pink-light);
+  filter: drop-shadow(0 0 12px rgba(240, 98, 146, 0.35));
+}
+.phase-heart-liquid {
+  color: #F48FB1;
+  filter: drop-shadow(0 0 8px rgba(244, 143, 177, 0.25));
+}
+.phase-heart-solid {
+  color: #F8BBD0;
+  filter: drop-shadow(0 0 6px rgba(248, 187, 208, 0.2));
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  15% { transform: scale(1.12); filter: brightness(1.15); }
+  30% { transform: scale(1); filter: brightness(1); }
+  45% { transform: scale(1.06); filter: brightness(1.08); }
+  60% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Phase name display (replaces score number) */
+.heart-gauge-phase {
+  margin-top: 10px;
+}
+
+.phase-name {
+  font-family: 'GmarketSans', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.heart-gauge-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
   font-weight: 600;
 }
-
-.grade-S {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-.grade-S .grade-letter { color: var(--gold); }
-.grade-S .grade-label { color: var(--gold-light); }
-
-.grade-A {
-  background: rgba(233, 30, 99, 0.15);
-  border: 1px solid rgba(233, 30, 99, 0.3);
-}
-.grade-A .grade-letter { color: var(--primary); }
-.grade-A .grade-label { color: var(--pink-light); }
-
-.grade-B {
-  background: rgba(240, 98, 146, 0.12);
-  border: 1px solid rgba(240, 98, 146, 0.25);
-}
-.grade-B .grade-letter { color: var(--pink-light); }
-.grade-B .grade-label { color: var(--text-secondary); }
-
-.grade-C {
-  background: rgba(139, 101, 120, 0.15);
-  border: 1px solid rgba(139, 101, 120, 0.3);
-}
-.grade-C .grade-letter { color: var(--text-secondary); }
-.grade-C .grade-label { color: var(--text-tertiary); }
-
-.grade-D {
-  background: rgba(75, 55, 65, 0.3);
-  border: 1px solid rgba(75, 55, 65, 0.5);
-}
-.grade-D .grade-letter { color: var(--text-tertiary); }
-.grade-D .grade-label { color: var(--text-tertiary); }
 
 /* Fortune Title & Description */
 .fortune-title {
@@ -291,14 +451,14 @@ body {
   word-break: keep-all;
 }
 
-/* ==================== Score Bars ==================== */
+/* ==================== ECG Waveform ==================== */
 
-.scores-section {
+.ecg-section {
   margin-top: 24px;
   text-align: left;
 }
 
-.scores-title {
+.ecg-title {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
@@ -308,141 +468,237 @@ body {
   gap: 6px;
 }
 
-.scores-title i {
-  color: var(--primary);
-  font-size: 18px;
-}
-
-.score-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.score-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  width: 68px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.score-heart-icon {
-  font-size: 10px;
+.ecg-title svg {
   color: var(--primary);
 }
 
-.score-bar-bg {
-  flex: 1;
-  height: 8px;
+.ecg-wave-container {
+  position: relative;
   background: var(--surface);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
+  padding: 16px 12px 8px;
   overflow: hidden;
 }
 
-.score-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: var(--primary);
-  transition: width 1s ease-out;
-  animation: barFillIn 1s ease-out;
+.ecg-svg {
+  width: 100%;
+  height: 80px;
+  display: block;
 }
 
-.score-value {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-primary);
-  width: 32px;
-  text-align: right;
-  flex-shrink: 0;
+.ecg-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: ecgDraw 2s ease-out forwards;
 }
 
-/* ==================== Lucky Items ==================== */
-
-.lucky-section {
-  margin-top: 24px;
-  text-align: left;
+.ecg-path-glow {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: ecgDraw 2s ease-out forwards;
 }
 
-.lucky-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 14px;
+@keyframes ecgDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ecg-labels {
   display: flex;
+  justify-content: space-around;
+  padding: 8px 20px 4px;
+}
+
+.ecg-label {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
 }
 
-.lucky-title i {
-  color: var(--gold);
-  font-size: 18px;
+.ecg-label-name {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 600;
 }
 
-.lucky-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+/* Intensity dot — size & opacity driven by CSS variable */
+.ecg-label-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: calc(0.3 + var(--dot-intensity, 0.5) * 0.7);
+  transform: scale(calc(0.5 + var(--dot-intensity, 0.5) * 0.5));
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.lucky-item {
-  background: var(--surface);
-  border-radius: var(--radius-xs);
-  padding: 14px 12px;
+/* ==================== Date Scenario ==================== */
+
+.scenario-section {
+  margin-top: 24px;
+}
+
+.scenario-card {
+  background: rgba(233, 30, 99, 0.04);
+  border: 1px solid rgba(233, 30, 99, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 20px;
   text-align: center;
 }
 
-.lucky-item-icon {
-  font-size: 22px;
-  color: var(--pink-light);
+.scenario-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.scenario-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.scenario-sentence {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.8;
+  word-break: keep-all;
+}
+
+/* ==================== Mascot Speech Bubble ==================== */
+
+.mascot-advice-section {
+  margin-bottom: 20px;
+}
+
+.mascot-advice-bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.mascot-advice-img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 6px rgba(233, 30, 99, 0.15));
+}
+
+.speech-bubble {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+  padding: 14px 16px;
+  flex: 1;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.04);
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 14px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 8px solid rgba(233, 30, 99, 0.15);
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 15px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 7px solid var(--bg-card);
+}
+
+.speech-bubble-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
   margin-bottom: 6px;
 }
 
-.lucky-item-label {
-  font-size: 11px;
-  color: var(--text-tertiary);
-  margin-bottom: 4px;
-}
-
-.lucky-item-value {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--gold);
-}
-
-/* ==================== Advice ==================== */
-
-.advice-section {
-  margin-top: 24px;
-  text-align: left;
-}
-
-.advice-card {
-  background: rgba(233, 30, 99, 0.08);
-  border: 1px solid rgba(233, 30, 99, 0.2);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.advice-icon {
-  font-size: 20px;
-  color: var(--pink-light);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.advice-text {
+.speech-bubble-text {
   font-size: 14px;
   color: var(--text-secondary);
   line-height: 1.6;
   word-break: keep-all;
+}
+
+/* ==================== Love Type ==================== */
+
+.love-type-content {
+  text-align: left;
+}
+
+.love-type-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.love-type-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.love-type-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.love-type-label {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.love-type-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  word-break: keep-all;
+  margin-bottom: 14px;
+}
+
+.love-type-action {
+  background: rgba(233, 30, 99, 0.05);
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+}
+
+.love-type-action-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.love-type-action-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 /* ==================== Activity Recommendation ==================== */
@@ -457,6 +713,7 @@ body {
   border-radius: var(--radius);
   padding: 24px 20px;
   animation: slideUp 0.5s ease;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.04);
 }
 
 .activity-header {
@@ -527,6 +784,7 @@ body {
   border-radius: var(--radius);
   padding: 24px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.04);
 }
 
 .premium-card.unlocked {
@@ -545,11 +803,6 @@ body {
   align-items: center;
   gap: 6px;
   margin-bottom: 10px;
-}
-
-.premium-content-title i {
-  color: var(--gold);
-  font-size: 18px;
 }
 
 .premium-content-text {
@@ -592,7 +845,7 @@ body {
   gap: 8px;
   border: 2px solid var(--primary);
   background: transparent;
-  color: var(--pink-light);
+  color: var(--primary);
   transition: opacity 0.15s ease, transform 0.1s ease;
 }
 
@@ -717,6 +970,109 @@ body {
   50% { opacity: 1; }
 }
 
-@keyframes barFillIn {
-  from { width: 0 !important; }
+/* ==================== Weekly Forecast — phase dots ==================== */
+
+.weekly-days {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.weekly-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.weekly-day-name {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* Phase dots — no text, density & saturation only */
+.weekly-day-phase {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.weekly-day-phase.phase-plasma {
+  background: var(--primary);
+  box-shadow: 0 0 10px rgba(233, 30, 99, 0.4);
+}
+
+.weekly-day-phase.phase-gas {
+  background: var(--pink-light);
+  box-shadow: 0 0 6px rgba(240, 98, 146, 0.2);
+}
+
+.weekly-day-phase.phase-liquid {
+  background: rgba(233, 30, 99, 0.25);
+}
+
+.weekly-day-phase.phase-solid {
+  background: rgba(248, 187, 208, 0.3);
+}
+
+.weekly-summary {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ==================== Mascot Styles ==================== */
+
+.phase-mascot-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.phase-mascot {
+  width: 88px;
+  height: 88px;
+  display: block;
+  filter: drop-shadow(0 3px 10px rgba(233, 30, 99, 0.15));
+  animation: mascotBounce 2s ease-in-out infinite;
+}
+
+@keyframes mascotBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(-2deg); }
+  75% { transform: translateY(-3px) rotate(2deg); }
+}
+
+.loading-mascot {
+  width: 120px;
+  height: 120px;
+  display: block;
+  animation: mascotFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 16px rgba(233, 30, 99, 0.2));
+}
+
+.streak-badge-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.premium-mascot {
+  width: 48px;
+  height: 48px;
+  display: block;
+  opacity: 0.8;
+}
+
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
