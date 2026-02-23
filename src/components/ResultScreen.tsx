@@ -2,6 +2,7 @@ import React from 'react';
 import { FortuneResult } from '../types';
 import { getActivityRecommendation, getWeeklyForecast } from '../utils/fortune-engine';
 import FortuneCard from './FortuneCard';
+import BannerAd from './BannerAd';
 import {
   HeartLineIcon,
   RefreshIcon,
@@ -157,6 +158,11 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
             </>
           )}
         </div>
+      </div>
+
+      {/* Banner Ad */}
+      <div style={{ margin: '24px 0 0' }}>
+        <BannerAd adGroupId="ait.v2.live.0847e7a555254a23" />
       </div>
 
       {/* Retry Button */}
